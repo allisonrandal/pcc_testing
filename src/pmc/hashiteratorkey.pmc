@@ -1,0 +1,82 @@
+/*
+Copyright (C) 2001-2009, Parrot Foundation.
+$Id$
+
+=head1 NAME
+
+src/pmc/hashiteratorkey.pmc - accessor for single value during hash iteration.
+
+=head1 DESCRIPTION
+
+Single (key,value) pair.
+
+
+=head1 Methods
+
+=over 4
+
+=cut
+
+*/
+
+pmclass HashIteratorKey no_ro auto_attrs {
+    ATTR Hash        *parrot_hash; /* Underlying parrot's hash */
+    ATTR HashBucket  *bucket;      /* Current bucket from HashItertor */
+
+/*
+
+=item C<get_pmc()>
+
+Get "key".
+
+=cut
+
+*/
+    VTABLE PMC* get_pmc() {
+        Parrot_HashIteratorKey_attributes *attrs =
+                PARROT_HASHITERATORKEY(SELF);
+        return hash_key_to_pmc(INTERP, attrs->parrot_hash, attrs->bucket->key);
+    }
+
+    METHOD key() {
+        PMC *ret = SELF.get_pmc();
+        RETURN(PMC* ret);
+    }
+
+    METHOD value() {
+        Parrot_HashIteratorKey_attributes *attrs =
+                PARROT_HASHITERATORKEY(SELF);
+        PMC *ret = hash_value_to_pmc(INTERP, attrs->parrot_hash, attrs->bucket->value);
+        RETURN(PMC* ret);
+    }
+
+
+    VTABLE INTVAL get_integer() {
+        return -1;
+    }
+
+    VTABLE STRING* get_string() {
+        Parrot_HashIteratorKey_attributes *attrs =
+                PARROT_HASHITERATORKEY(SELF);
+
+        return hash_key_to_string(INTERP, attrs->parrot_hash, attrs->bucket->key);
+    }
+
+
+}
+
+/*
+
+=back
+
+=cut
+
+*/
+
+/*
+ * Local variables:
+ *   c-file-style: "parrot"
+ * End:
+ * vim: expandtab shiftwidth=4:
+ */
+

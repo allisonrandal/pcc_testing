@@ -1,0 +1,149 @@
+/*
+Copyright (C) 2001-2009, Parrot Foundation.
+$Id$
+
+=head1 NAME
+
+src/pmc/context.pmc - Interpreter Context.
+
+=head1 DESCRIPTION
+
+Stores context of execution. Currently we store pointer to Parrot_Context
+structure in PMC_data.
+
+=head2 Vtable Functions
+
+=over 4
+
+=cut
+
+*/
+
+
+#include "parrot/packfile.h"
+
+pmclass Context {
+
+/*
+
+=item C<void init()>
+
+Initialize new Context. See C<Parrot_alloc_context>.
+
+=cut
+
+*/
+
+    VTABLE void init() {
+        PMC_data(SELF) = NULL;
+        PObj_custom_mark_destroy_SETALL(SELF);
+    }
+
+
+/*
+
+=item C<void mark()>
+
+Mark Context as alive.
+
+=cut
+
+*/
+
+    VTABLE void mark()
+    {
+        Parrot_Context * const ctx = PMC_data_typed(SELF, Parrot_Context*);
+        UINTVAL i;
+
+        /* If Context wasn't initialised just return */
+        if (!ctx)
+            return;
+
+        Parrot_gc_mark_PMC_alive(INTERP, ctx->caller_ctx);
+        Parrot_gc_mark_PMC_alive(INTERP, ctx->lex_pad);
+        Parrot_gc_mark_PMC_alive(INTERP, ctx->outer_ctx);
+        Parrot_gc_mark_PMC_alive(INTERP, ctx->current_sub);
+        Parrot_gc_mark_PMC_alive(INTERP, ctx->handlers);
+        Parrot_gc_mark_PMC_alive(INTERP, ctx->current_cont);
+        Parrot_gc_mark_PMC_alive(INTERP, ctx->current_object);
+        Parrot_gc_mark_PMC_alive(INTERP, ctx->current_namespace);
+        Parrot_gc_mark_PMC_alive(INTERP, ctx->results_signature);
+
+        if (!ctx->n_regs_used)
+            return;
+
+        for (i = 0; i < ctx->n_regs_used[REGNO_PMC]; ++i) {
+            PMC *p = ctx->bp_ps.regs_p[-1L-(i)];
+            /* Original code from CTX_REG_PMC */
+            if (p)
+                Parrot_gc_mark_PMC_alive(interp, p);
+        }
+
+        for (i = 0; i < ctx->n_regs_used[REGNO_STR]; ++i) {
+            STRING *s = ctx->bp_ps.regs_s[i];
+            if (s)
+                Parrot_gc_mark_STRING_alive(interp, s);
+        }
+    }
+
+/*
+
+=item C<void destroy()>
+
+Destroy Context and memory allocated by C<Parrot_alloc_context>.
+
+=cut
+
+*/
+
+    VTABLE void destroy() {
+        /* We own this pointer */
+        Parrot_Context * const ctx = PMC_data_typed(SELF, Parrot_Context*);
+
+        if (!ctx)
+            return;
+
+#ifdef GC_USE_FIXED_SIZE_ALLOCATOR
+        Parrot_gc_free_fixed_size_storage(interp,
+                Parrot_pcc_calculate_context_size(INTERP, ctx->n_regs_used),
+                ctx);
+#else
+        mem_sys_free(ctx);
+#endif
+        PMC_data(SELF) = NULL;
+    }
+
+/*
+
+=item C<void *get_pointer()>
+
+Return pointer to underlying Parrot_Context structure.
+
+=cut
+
+*/
+
+    VTABLE void *get_pointer() {
+        return PMC_data(SELF);
+    }
+
+/*
+
+=item C<void set_pointer(void *)>
+
+Set new Parrot_Context structure.
+
+=cut
+
+*/
+    VTABLE void set_pointer(void *context) {
+        PMC_data(SELF) = context;
+    }
+}
+
+/*
+ * Local variables:
+ *   c-file-style: "parrot"
+ * End:
+ * vim: expandtab shiftwidth=4:
+ */
