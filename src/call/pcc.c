@@ -305,19 +305,19 @@ static void too_many(PARROT_INTERP,
     , PARROT_ASSERT_ARG(st))
 #define ASSERT_ARGS_count_signature_elements __attribute__unused__ int _ASSERT_ARGS_CHECK = (\
        PARROT_ASSERT_ARG(interp) \
-#define ASSERT_ARGS_dissect_aggregate_arg __attribute__unused__ int _ASSERT_ARGS_CHECK = \
-       PARROT_ASSERT_ARG(interp) \
-    || PARROT_ASSERT_ARG(call_object) \
-    || PARROT_ASSERT_ARG(aggregate)
-#define ASSERT_ARGS_extract_named_arg_from_op __attribute__unused__ int _ASSERT_ARGS_CHECK = \
-       PARROT_ASSERT_ARG(interp) \
-    || PARROT_ASSERT_ARG(call_object) \
-    || PARROT_ASSERT_ARG(name) \
-    || PARROT_ASSERT_ARG(raw_sig) \
-    || PARROT_ASSERT_ARG(raw_args)
     , PARROT_ASSERT_ARG(signature) \
     , PARROT_ASSERT_ARG(args_sig) \
     , PARROT_ASSERT_ARG(results_sig))
+#define ASSERT_ARGS_dissect_aggregate_arg __attribute__unused__ int _ASSERT_ARGS_CHECK = (\
+       PARROT_ASSERT_ARG(interp) \
+    , PARROT_ASSERT_ARG(call_object) \
+    , PARROT_ASSERT_ARG(aggregate))
+#define ASSERT_ARGS_extract_named_arg_from_op __attribute__unused__ int _ASSERT_ARGS_CHECK = (\
+       PARROT_ASSERT_ARG(interp) \
+    , PARROT_ASSERT_ARG(call_object) \
+    , PARROT_ASSERT_ARG(name) \
+    , PARROT_ASSERT_ARG(raw_sig) \
+    , PARROT_ASSERT_ARG(raw_args))
 #define ASSERT_ARGS_fetch_arg_op __attribute__unused__ int _ASSERT_ARGS_CHECK = (\
        PARROT_ASSERT_ARG(interp) \
     , PARROT_ASSERT_ARG(st))
@@ -334,14 +334,14 @@ static void too_many(PARROT_INTERP,
     , PARROT_ASSERT_ARG(st))
 #define ASSERT_ARGS_next_arg_sig __attribute__unused__ int _ASSERT_ARGS_CHECK = (\
        PARROT_ASSERT_ARG(interp) \
-#define ASSERT_ARGS_parse_signature_string __attribute__unused__ int _ASSERT_ARGS_CHECK = \
-       PARROT_ASSERT_ARG(interp) \
-    || PARROT_ASSERT_ARG(signature) \
-    || PARROT_ASSERT_ARG(arg_flags) \
-    || PARROT_ASSERT_ARG(return_flags)
     , PARROT_ASSERT_ARG(sti))
 #define ASSERT_ARGS_null_val __attribute__unused__ int _ASSERT_ARGS_CHECK = (\
        PARROT_ASSERT_ARG(st))
+#define ASSERT_ARGS_parse_signature_string __attribute__unused__ int _ASSERT_ARGS_CHECK = (\
+       PARROT_ASSERT_ARG(interp) \
+    , PARROT_ASSERT_ARG(signature) \
+    , PARROT_ASSERT_ARG(arg_flags) \
+    , PARROT_ASSERT_ARG(return_flags))
 #define ASSERT_ARGS_set_context_sig_params __attribute__unused__ int _ASSERT_ARGS_CHECK = (\
        PARROT_ASSERT_ARG(interp) \
     , PARROT_ASSERT_ARG(signature) \

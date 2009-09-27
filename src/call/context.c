@@ -612,7 +612,7 @@ Parrot_pcc_get_signature(PARROT_INTERP, ARGIN(PMC *ctx))
 
 /*
 
-=item C<void Parrot_pcc_set_signature(PARROT_INTERP, PMC *ctx, PMC *object)>
+=item C<void Parrot_pcc_set_signature(PARROT_INTERP, PMC *ctx, PMC *sig_object)>
 
 Set signature of Context (in sub/method call).
 
