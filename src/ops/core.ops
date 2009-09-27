@@ -516,28 +516,35 @@ to the elements of the signature array.
 
 
 op set_args(inconst PMC) :flow {
-    opcode_t * const _this = CUR_OPCODE;
+    opcode_t * const raw_args = CUR_OPCODE;
     PMC * const signature = $1;
     INTVAL argc;
 
-    /* for now just point to the opcode */
-    interp->current_args = _this;
+    CONTEXT(interp)->current_sig =
+            Parrot_pcc_build_sig_object_from_op(interp,
+            PMCNULL, signature, raw_args);
+
     argc = VTABLE_elements(interp, signature);
     goto OFFSET(argc + 2);
 }
 
 op get_results(inconst PMC) :flow {
-    opcode_t * const _this = CUR_OPCODE;
+    opcode_t * const raw_returns = CUR_OPCODE;
     PMC * const signature = $1;
+    PMC * call_sig;
     INTVAL argc;
 
-    Parrot_pcc_set_results(interp, CURRENT_CONTEXT(interp), _this);
+    call_sig = Parrot_pcc_build_sig_object_returns_from_op(interp, 
+            Parrot_pcc_get_signature(interp, CURRENT_CONTEXT(interp)),
+            signature, raw_returns);
+    Parrot_pcc_set_signature(interp, CURRENT_CONTEXT(interp), call_sig);
+
     argc = VTABLE_elements(interp, signature);
     goto OFFSET(argc + 2);
 }
 
 op get_params(inconst PMC) :flow {
-    opcode_t * const _this = CUR_OPCODE;
+    opcode_t * const raw_params = CUR_OPCODE;
     PMC *caller_ctx, *ctx;
     PMC * ccont;
     PMC * const signature = $1;
@@ -562,7 +569,6 @@ op get_params(inconst PMC) :flow {
         PObj_get_FLAGS(ccont) &= ~SUB_FLAG_TAILCALL;
         Parrot_pcc_dec_recursion_depth(interp, ctx);
         Parrot_pcc_set_caller_ctx(interp, ctx, Parrot_pcc_get_caller_ctx(interp, caller_ctx));
-        interp->current_args = NULL;
     }
     argc = VTABLE_elements(interp, signature);
     goto OFFSET(argc + 2);

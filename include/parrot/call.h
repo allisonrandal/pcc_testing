@@ -35,6 +35,20 @@ typedef struct parrot_runloop_t {
 
 typedef parrot_runloop_t Parrot_runloop;
 
+typedef enum {
+    CALLSIGNATURE_is_exception_FLAG      = PObj_private0_FLAG,
+} callsignature_flags_enum;
+
+#define CALLSIGNATURE_get_FLAGS(o) (PObj_get_FLAGS(o))
+#define CALLSIGNATURE_flag_TEST(flag, o) (CALLSIGNATURE_get_FLAGS(o) & CALLSIGNATURE_ ## flag ## _FLAG)
+#define CALLSIGNATURE_flag_SET(flag, o) (CALLSIGNATURE_get_FLAGS(o) |= CALLSIGNATURE_ ## flag ## _FLAG)
+#define CALLSIGNATURE_flag_CLEAR(flag, o) (CALLSIGNATURE_get_FLAGS(o) &= ~(UINTVAL)(CALLSIGNATURE_ ## flag ## _FLAG))
+
+/* Mark if the CallSignature is for an exception handler */
+#define CALLSIGNATURE_is_exception_TEST(o)  CALLSIGNATURE_flag_TEST(is_exception, (o))
+#define CALLSIGNATURE_is_exception_SET(o)   CALLSIGNATURE_flag_SET(is_exception, (o))
+#define CALLSIGNATURE_is_exception_CLEAR(o) CALLSIGNATURE_flag_CLEAR(is_exception, (o))
+
 typedef enum call_state_mode {
     /* argument fetching/putting modes */
     CALL_STATE_SIG     = 0x100, /* runops, nci. In case we're interfacing with
@@ -687,6 +701,60 @@ void runops(PARROT_INTERP, size_t offs)
        PARROT_ASSERT_ARG(interp))
 /* Don't modify between HEADERIZER BEGIN / HEADERIZER END.  Your changes will be lost. */
 /* HEADERIZER END: src/call/ops.c */
+
+/* HEADERIZER BEGIN: src/call/callsignature.c */
+/* Don't modify between HEADERIZER BEGIN / HEADERIZER END.  Your changes will be lost. */
+
+PARROT_EXPORT
+PARROT_WARN_UNUSED_RESULT
+PARROT_CANNOT_RETURN_NULL
+opcode_t* Parrot_pcc_get_call_sig_raw_args(PARROT_INTERP,
+    ARGIN(PMC *call_sig))
+        __attribute__nonnull__(1)
+        __attribute__nonnull__(2);
+
+PARROT_EXPORT
+PARROT_WARN_UNUSED_RESULT
+PARROT_CANNOT_RETURN_NULL
+opcode_t* Parrot_pcc_get_call_sig_raw_returns(PARROT_INTERP,
+    ARGIN(PMC *call_sig))
+        __attribute__nonnull__(1)
+        __attribute__nonnull__(2);
+
+PARROT_EXPORT
+PARROT_CANNOT_RETURN_NULL
+void Parrot_pcc_set_call_sig_raw_args(PARROT_INTERP,
+    ARGIN(PMC *call_sig),
+    ARGIN_NULLOK(opcode_t *raw_args))
+        __attribute__nonnull__(1)
+        __attribute__nonnull__(2);
+
+PARROT_EXPORT
+PARROT_CANNOT_RETURN_NULL
+void Parrot_pcc_set_call_sig_raw_returns(PARROT_INTERP,
+    ARGIN(PMC *call_sig),
+    ARGIN_NULLOK(opcode_t *raw_returns))
+        __attribute__nonnull__(1)
+        __attribute__nonnull__(2);
+
+#define ASSERT_ARGS_Parrot_pcc_get_call_sig_raw_args \
+     __attribute__unused__ int _ASSERT_ARGS_CHECK = \
+       PARROT_ASSERT_ARG(interp) \
+    || PARROT_ASSERT_ARG(call_sig)
+#define ASSERT_ARGS_Parrot_pcc_get_call_sig_raw_returns \
+     __attribute__unused__ int _ASSERT_ARGS_CHECK = \
+       PARROT_ASSERT_ARG(interp) \
+    || PARROT_ASSERT_ARG(call_sig)
+#define ASSERT_ARGS_Parrot_pcc_set_call_sig_raw_args \
+     __attribute__unused__ int _ASSERT_ARGS_CHECK = \
+       PARROT_ASSERT_ARG(interp) \
+    || PARROT_ASSERT_ARG(call_sig)
+#define ASSERT_ARGS_Parrot_pcc_set_call_sig_raw_returns \
+     __attribute__unused__ int _ASSERT_ARGS_CHECK = \
+       PARROT_ASSERT_ARG(interp) \
+    || PARROT_ASSERT_ARG(call_sig)
+/* Don't modify between HEADERIZER BEGIN / HEADERIZER END.  Your changes will be lost. */
+/* HEADERIZER END: src/call/callsignature.c */
 
 #define ASSERT_SIG_PMC(sig) do {\
     PARROT_ASSERT(!PMC_IS_NULL(sig)); \

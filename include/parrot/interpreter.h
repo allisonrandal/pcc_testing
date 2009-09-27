@@ -224,6 +224,8 @@ struct parrot_interp_t {
     INTVAL flags;                             /* Various interpreter flags that
                                                * signal that runops should do
                                                * something */
+    PMC *caller_sig;            /* CallSignature PMC that invoked this context*/
+    PMC *current_sig;           /* temporary CallSignature PMC for active call */
 
     UINTVAL debug_flags;                      /* debug settings */
 
