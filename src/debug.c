@@ -3586,7 +3586,7 @@ PDB_backtrace(PARROT_INTERP)
             break;
 
 
-        str = Parrot_Context_infostr(interp, ctx->caller_ctx);
+        str = Parrot_Context_infostr(interp, Parrot_pcc_get_caller_ctx(interp, ctx));
 
 
         if (!str)
@@ -3633,7 +3633,7 @@ PDB_backtrace(PARROT_INTERP)
         }
 
         /* get the next Continuation */
-        ctx = Parrot_pcc_get_caller_ctx(interp, ctx)
+        ctx = Parrot_pcc_get_caller_ctx(interp, ctx);
         old = sub;
 
         if (!ctx)
